@@ -28,10 +28,11 @@ $db_password="";
 
 class Datos {
 
-    protected $dodocument;
-    protected $fact;
-    protected $nombre_tabla;
-    protected $url;
+    public static function name() {
+        $get = $_GET["nom"];
+        $nombre_tabla = "factura_" . $get;
+        return $nombre_tabla;
+    }
 
     public static function dodocument() {
         // si se apreto el boton con el name="boton-enviar"
@@ -60,18 +61,6 @@ class Datos {
        }
        // imprime $nombre_tabla
         echo $nombre_tabla;
-    }
-    public static function concepto() {
-        if(isset($_POST["boton-enviar"])) {
-
-            $concepto = $_POST["concepto"];
-            
-        }else {
-
-            $concepto = "concepto fallido";
-
-        }
-        echo $concepto;
     }
 
 }
@@ -172,42 +161,23 @@ class Datos {
 
         public static function mostrarInformacion() {
             $conexion = Conectar::conexion();
-            $nombre_tabla = Datos::nombre_tabla();
-            $dodocument = Datos::dodocument();
-            $query = "SELECT * FROM $nombre_tabla WHERE DNI=$dodocument";
+            $table_name = Datos::name();
+            $query = "SELECT * FROM $table_name";
             $resulset = $conexion->prepare($query);
             $resulset->execute();
-            $fase = $resulset->fetch(PDO::FETCH_ASSOC);
-            $documento = $fase["DNI"];
-            $concepto = $fase["CONCEPTO"];
-            $periodo = $fase["PERIODO"];
-            $importe = $fase["IMPORTE"];
-            $propietario = $fase["PROPIETARIO"];
-            $fecha_vencimiento1 = $fase["VENCIMIENTO1"];
-            $fecha_vencimiento2 = $fase["VENCIMIENTO2"];
-            $total = $fase["TOTAL"];
-            echo "<table>" +
-                "<tr>" +
-                    "<th>DNI</th>
-                    <th>CONCEPTO</th>
-                    <th>PERIODO</th>
-                    <th>IMPORTE</th>
-                    <th>PROPIETARIO</th>
-                    <th>PRIMER VENCIMIENTO</th>
-                    <th>SEGUNDO VENCIMIENTO</th>
-                    <th>TOTAL</th>" +
-                "</tr>" +
-                "<tr>" + 
-                    "<td>" + $documento + "</td>" +
-                    "<td>" + $concepto + "</td>" +
-                    "<td>" + $periodo + "</td>" +
-                    "<td>" + $importe + "</td>" +
-                    "<td>" + $propietario + "</td>" +
-                    "<td>" + $fecha_vencimiento1 + "</td>" +
-                    "<td>" + $fecha_vencimiento2 + "</td>" +
-                    "<td>" + $total + "</td>" +
-                "</tr>" +
-                "</table>";
+            while($fase = $resulset->fetch(PDO::FETCH_OBJ)) { 
+        
+            echo "<b style='color:red;'>DNI: " . $fase->DNI. "</b>" . "<br>";
+            echo "CONCEPTO: " . $fase->CONCEPTO . "<br>";
+            echo "PERIODO: " . $fase->PERIODO . "<br>";
+            echo "IMPORTE: " . $fase->IMPORTE . "<br>";
+            echo "PROPIETARIO: " . $fase->PROPIETARIO . "<br>";
+            echo "PRIMER VENCIMIENTO: " . $fase->VENCIMIENTO1 . "<br>";
+            echo "SEGUNDO VENCIMIENTO: " . $fase->VENCIMIENTO2 . "<br>";
+            echo "TOTAL: $" . $fase->TOTAL . "<br>";
+            echo "<hr>";
+
+            }
 
             
         }
@@ -374,9 +344,5 @@ class Datos {
 
 
     }
-
-    Datos::dodocument();
-    Datos::nombre_tabla();
-    Datos::concepto();
 
 ?>
